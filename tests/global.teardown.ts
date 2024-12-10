@@ -1,5 +1,6 @@
 import { chromium } from '@playwright/test';
 import dotenv from 'dotenv';
+import { promises as fs } from 'fs';
 
 dotenv.config();
 
@@ -11,8 +12,17 @@ async function globalTeardown() {
         ignoreHTTPSErrors: true,
     });
 
+    const authFilePaths = ['auth.json', 'auth/userOne.json', 'auth/userTwo.json', 'auth/userThree.json'];
     try {
-        // OPTIONAL: Helpful for removing temporary data and other features created in setup
+
+        for (const file of authFilePaths){
+        try{
+            await fs.unlink(file);
+            console.log(`Auth state file ${file} removed]`);
+        }catch (error){
+            console.warn(`Failed to remove ${file}: `, error.message)
+        }
+     }
     } catch (error) {
         console.error('Error in global teardown:', error);
     } finally {
